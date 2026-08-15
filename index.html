@@ -352,12 +352,13 @@
       </p>
 
       <div class="form-wrap">
-        <form id="contact" novalidate>
+        <form id="contact" action="https://api.web3forms.com/submit" method="POST" novalidate>
           <!-- Web3Forms delivery. The access key is a public submit token, not a secret,
                and it does not reveal the destination email address. -->
           <input type="hidden" name="access_key" value="c013bdfa-499a-4679-bae7-f6e58ec07425">
           <input type="hidden" name="subject" value="New inquiry from biddlesystems.com">
           <input type="hidden" name="from_name" value="Biddle Systems Website">
+          <input type="hidden" name="redirect" value="http://biddlesystems.com/thanks.html">
 
           <div class="hp" aria-hidden="true">
             <label for="botcheck">Leave this field empty</label>
@@ -432,9 +433,10 @@
         }
       })
       .catch(function () {
-        status.className = 'status err';
-        status.textContent = "Something went wrong — please try again in a moment.";
-        button.disabled = false;
+        // fetch can fail on CORS or offline. Fall back to a native form POST,
+        // which is not subject to CORS and lands on /thanks.html.
+        status.textContent = 'Sending…';
+        form.submit();
       });
   });
 })();
