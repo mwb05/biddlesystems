@@ -201,6 +201,32 @@
   .cta:hover { transform: translateY(-2px); box-shadow: 0 20px 40px -14px rgba(255,255,255,.5); }
   .cta:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 3px; }
 
+  /* .cta as a <button> */
+  button.cta { border: none; font-family: inherit; cursor: pointer; }
+
+  /* reveal animation for the collapsed form */
+  .reveal { animation: reveal .42s cubic-bezier(.2,.7,.3,1) both; }
+  @keyframes reveal {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  .cancel {
+    display: block;
+    margin: 1rem auto 0;
+    padding: .35rem .6rem;
+    border: none;
+    background: none;
+    color: var(--ink-faint);
+    font-family: inherit;
+    font-size: .85rem;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .cancel:hover { color: var(--ink-dim); }
+  .cancel:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 3px; border-radius: .3rem; }
+
   .sub {
     margin-top: 1.5rem;
     font-size: .88rem;
@@ -324,6 +350,14 @@
     * { animation: none !important; transition: none !important; }
   }
 </style>
+
+<noscript>
+  <style>
+    /* Without JS the reveal button can't work, so show the form outright. */
+    #form-wrap[hidden] { display: block !important; }
+    #reveal, #cancel   { display: none !important; }
+  </style>
+</noscript>
 </head>
 <body>
 
@@ -347,11 +381,13 @@
         Check back shortly.
       </p>
 
-      <p class="sub" style="margin-top:0;margin-bottom:1.5rem">
-        Questions or early access? Send us a note.
-      </p>
+      <button class="cta" type="button" id="reveal" aria-expanded="false" aria-controls="form-wrap">
+        Get in touch &rarr;
+      </button>
 
-      <div class="form-wrap">
+      <p class="sub" id="reveal-hint">Questions or early access? We usually reply within a day.</p>
+
+      <div class="form-wrap" id="form-wrap" hidden>
         <form id="contact" action="https://api.web3forms.com/submit" method="POST" novalidate>
           <!-- Web3Forms delivery. The access key is a public submit token, not a secret,
                and it does not reveal the destination email address. -->
@@ -382,6 +418,7 @@
 
           <button class="submit" type="submit">Send message</button>
           <p class="status" id="status" role="status" aria-live="polite"></p>
+          <button class="cancel" type="button" id="cancel">Never mind</button>
         </form>
 
         <div class="sent" id="sent" hidden>
@@ -403,6 +440,39 @@
   var sent   = document.getElementById('sent');
   var status = document.getElementById('status');
   var button = form.querySelector('.submit');
+  var reveal = document.getElementById('reveal');
+  var wrap   = document.getElementById('form-wrap');
+  var hint   = document.getElementById('reveal-hint');
+  var cancel = document.getElementById('cancel');
+
+  function openForm() {
+    wrap.hidden   = false;
+    reveal.hidden = true;
+    hint.hidden   = true;
+    reveal.setAttribute('aria-expanded', 'true');
+    wrap.classList.add('reveal');
+    document.getElementById('name').focus({ preventScroll: true });
+    wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function closeForm() {
+    wrap.hidden   = true;
+    reveal.hidden = false;
+    hint.hidden   = false;
+    reveal.setAttribute('aria-expanded', 'false');
+    wrap.classList.remove('reveal');
+    status.textContent = '';
+    status.className = 'status';
+    reveal.focus({ preventScroll: true });
+  }
+
+  reveal.addEventListener('click', openForm);
+  cancel.addEventListener('click', closeForm);
+
+  // Escape closes the form, unless a message is already on its way.
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !wrap.hidden && sent.hidden && !button.disabled) closeForm();
+  });
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
