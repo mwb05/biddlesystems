@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biddle Systems</title>
+<meta name="robots" content="noindex">
+<!-- GitHub Pages serves this for any unknown path; /f/<slug> renders that form (the slug comes from the path). -->
+<meta name="forms-api" content="https://forms.45-80-153-33.sslip.io">
+<meta name="forms-slug" content="">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%235b8cff'/%3E%3Cstop offset='1' stop-color='%2329d0b8'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Ctext x='32' y='44' font-family='Segoe UI,Helvetica,Arial,sans-serif' font-size='36' font-weight='700' fill='%2306080e' text-anchor='middle'%3EB%3C/text%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #f3f5fa; --card: #ffffff; --ink: #141a2b; --ink-dim: #5c6884; --ink-faint: #97a3bb;
+    --accent: #5b8cff; --accent-2: #29d0b8; --line: #e3e7f0; --err: #d64545; --err-bg: #fff3f3;
+    --focus: rgba(91,140,255,.28);
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased; line-height: 1.5; min-height: 100vh;
+    background-image: radial-gradient(60rem 30rem at 50% -10rem, rgba(91,140,255,.14), transparent 70%);
+  }
+  .top { display: flex; align-items: center; justify-content: center; gap: .6rem; padding: 1.6rem 1rem .4rem; text-decoration: none; color: var(--ink-dim); }
+  .mark { width: 2.1rem; height: 2.1rem; border-radius: .6rem; display: grid; place-items: center; font-weight: 700; color: #06080e;
+          background: linear-gradient(140deg, var(--accent), var(--accent-2)); box-shadow: 0 10px 25px -12px rgba(91,140,255,.7); }
+  .word { font-size: .78rem; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; }
+  main { max-width: 42rem; margin: 0 auto; padding: .6rem 1rem 3rem; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 1.1rem; padding: 2rem 1.6rem; box-shadow: 0 20px 50px -30px rgba(20,26,43,.35); }
+  @media (min-width: 640px) { .card { padding: 2.6rem 2.6rem; } }
+  h1 { margin: 0 0 .5rem; font-size: clamp(1.55rem, 4vw, 2.05rem); letter-spacing: -.02em; line-height: 1.15; }
+  .desc { margin: 0 0 1.8rem; color: var(--ink-dim); white-space: pre-wrap; }
+  .field { margin: 0 0 1.45rem; }
+  .field > label, .field > .lbl { display: block; font-weight: 600; margin-bottom: .35rem; }
+  .req { color: var(--accent); margin-left: .15rem; }
+  .help { margin: -.15rem 0 .5rem; font-size: .9rem; color: var(--ink-dim); }
+  .section { margin: 2.2rem 0 1rem; padding-top: 1.4rem; border-top: 1px solid var(--line); }
+  .section:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+  .section h2 { margin: 0; font-size: .82rem; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+  .section p { margin: .3rem 0 0; color: var(--ink-dim); font-size: .95rem; }
+  input[type=text], input[type=email], input[type=tel], input[type=number], input[type=date], textarea, select {
+    width: 100%; font: inherit; color: var(--ink); background: #fbfcfe; border: 1px solid #cfd6e4; border-radius: .6rem;
+    padding: .7rem .85rem; outline: none; transition: border-color .15s, box-shadow .15s;
+  }
+  textarea { min-height: 6.5rem; resize: vertical; }
+  input:focus, textarea:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 4px var(--focus); background: #fff; }
+  select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%235c6884' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right .8rem center; padding-right: 2.4rem; }
+  .opts { display: flex; flex-direction: column; gap: .45rem; }
+  .opt { display: flex; align-items: flex-start; gap: .65rem; padding: .62rem .8rem; border: 1px solid #d9dfeb; border-radius: .6rem; background: #fbfcfe; cursor: pointer; transition: border-color .15s, background .15s; }
+  .opt:hover { border-color: #b9c4da; }
+  .opt:has(input:checked) { border-color: var(--accent); background: #f1f5ff; }
+  .opt:has(input:focus-visible) { box-shadow: 0 0 0 4px var(--focus); }
+  .opt input { margin: .25rem 0 0; accent-color: var(--accent); flex: none; }
+  .pills { display: flex; flex-wrap: wrap; gap: .5rem; }
+  .pill { position: relative; }
+  .pill input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+  .pill span { display: inline-block; min-width: 3rem; text-align: center; padding: .55rem .95rem; border: 1px solid #d9dfeb; border-radius: 999px; background: #fbfcfe; font-weight: 500; transition: all .15s; }
+  .pill:has(input:checked) span { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .pill:has(input:focus-visible) span { box-shadow: 0 0 0 4px var(--focus); }
+  .file { border: 1.5px dashed #c8d0e0; border-radius: .7rem; padding: .9rem; background: #fbfcfe; }
+  .file input { width: 100%; font: inherit; }
+  .file .list { margin: .5rem 0 0; font-size: .9rem; color: var(--ink-dim); }
+  .file .hint { margin: .35rem 0 0; font-size: .82rem; color: var(--ink-faint); }
+  .err { display: none; margin: .45rem 0 0; font-size: .9rem; color: var(--err); }
+  .field.bad input, .field.bad textarea, .field.bad select, .field.bad .file { border-color: var(--err); background: var(--err-bg); }
+  .field.bad .err { display: block; }
+  .actions { margin-top: 2rem; display: flex; flex-wrap: wrap; align-items: center; gap: .9rem; }
+  button.go { font: inherit; font-weight: 600; font-size: 1rem; color: #06080e; border: 0; border-radius: .7rem; padding: .85rem 1.6rem; cursor: pointer;
+              background: linear-gradient(140deg, var(--accent), var(--accent-2)); box-shadow: 0 14px 30px -14px rgba(91,140,255,.8); transition: transform .15s, opacity .15s; }
+  button.go:hover { transform: translateY(-1px); }
+  button.go:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+  button.go[disabled] { opacity: .6; cursor: progress; transform: none; }
+  .status { font-size: .92rem; color: var(--ink-dim); }
+  .status.bad { color: var(--err); }
+  .hp { position: absolute; left: -9999px; top: -9999px; height: 0; width: 0; overflow: hidden; }
+  .done { text-align: center; padding: 1.5rem 0 .5rem; }
+  .check { width: 4rem; height: 4rem; margin: 0 auto 1.4rem; border-radius: 50%; display: grid; place-items: center;
+           background: linear-gradient(140deg, var(--accent), var(--accent-2)); box-shadow: 0 18px 45px -14px rgba(41,208,184,.6); }
+  .check svg { width: 2rem; height: 2rem; }
+  .done h1 { font-size: clamp(1.6rem, 4.5vw, 2.2rem); }
+  .done p { color: var(--ink-dim); max-width: 30rem; margin: 0 auto 1.6rem; white-space: pre-wrap; }
+  .done a { color: var(--accent); text-decoration: none; font-weight: 600; }
+  .loading { text-align: center; color: var(--ink-dim); padding: 3rem 0; }
+  footer { text-align: center; font-size: .8rem; color: var(--ink-faint); padding: 1.2rem 1rem 2rem; }
+  footer a { color: inherit; }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  .card { animation: rise .6s cubic-bezier(.2,.7,.3,1) both; }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+  <a class="top" href="https://biddlesystems.com/" rel="noopener"><span class="mark" aria-hidden="true">B</span><span class="word">Biddle Systems</span></a>
+  <main>
+    <div class="card" id="card"><div class="loading" id="loading">Loading…</div></div>
+  </main>
+  <footer>&copy; <span id="yr"></span> Biddle Systems LLC &middot; <a href="https://biddlesystems.com/privacy.html">Privacy</a></footer>
+
+<script>
+(function () {
+  'use strict';
+  var META = function (n) { var m = document.querySelector('meta[name="' + n + '"]'); return m ? m.getAttribute('content') || '' : ''; };
+  var API = META('forms-api').replace(/\/$/, '');
+  var LIM = { filesPerField: 5, fileBytes: 10 * 1024 * 1024, totalFileBytes: 25 * 1024 * 1024 };
+  var card = document.getElementById('card');
+  var loadedAt = Date.now();
+  document.getElementById('yr').textContent = String(new Date().getFullYear());
+
+  function slugFromLocation() {
+    var m = /\/f\/([a-z0-9-]{1,60})\/?$/.exec(location.pathname);
+    if (m) return m[1];
+    var q = new URLSearchParams(location.search).get('f');
+    if (q && /^[a-z0-9-]{1,60}$/.test(q)) return q;
+    return META('forms-slug');
+  }
+  var slug = slugFromLocation();
+  var DRAFT_KEY = 'biddle-forms.draft.' + slug;
+
+  function el(tag, attrs, children) {
+    var e = document.createElement(tag);
+    if (attrs) Object.keys(attrs).forEach(function (k) {
+      if (k === 'text') e.textContent = attrs[k];
+      else if (k === 'html') e.innerHTML = attrs[k];
+      else if (k === 'class') e.className = attrs[k];
+      else if (k.slice(0, 2) === 'on') e.addEventListener(k.slice(2), attrs[k]);
+      else if (attrs[k] != null && attrs[k] !== false) e.setAttribute(k, attrs[k] === true ? '' : attrs[k]);
+    });
+    (children || []).forEach(function (c) { if (c) e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c); });
+    return e;
+  }
+
+  function fail(msg) {
+    card.innerHTML = '';
+    card.appendChild(el('div', { class: 'done' }, [el('h1', { text: 'Hmm.' }), el('p', { text: msg }), el('a', { href: 'https://biddlesystems.com/', text: 'Back to biddlesystems.com' })]));
+  }
+
+  if (!slug) { document.title = 'Page not found - Biddle Systems'; fail('That page does not exist. Check the link, or head back to the homepage.'); return; }
+
+  fetch(API + '/api/forms/' + slug, { cache: 'no-store' })
+    .then(function (r) { if (!r.ok) throw new Error(r.status === 404 ? 'This form is no longer available. Please reply to your welcome email and we will send a fresh link.' : 'Could not load the form (' + r.status + ').'); return r.json(); })
+    .then(render)
+    .catch(function (e) { fail(e.message || 'Could not load the form.'); });
+
+  function render(form) {
+    document.title = form.title + ' — Biddle Systems';
+    var draft = {};
+    try { draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || '{}') || {}; } catch (e) { draft = {}; }
+    var pendingFiles = {};   // fieldId → File[]
+    card.innerHTML = '';
+    var frm = el('form', { novalidate: true, autocomplete: 'on' });
+    frm.appendChild(el('h1', { text: form.title }));
+    if (form.description) frm.appendChild(el('p', { class: 'desc', text: form.description }));
+
+    var fieldEls = {};
+    form.fields.forEach(function (f) {
+      if (f.type === 'section') {
+        frm.appendChild(el('div', { class: 'section' }, [el('h2', { text: f.label }), f.help ? el('p', { text: f.help }) : null]));
+        return;
+      }
+      var id = 'q_' + f.id;
+      var wrap = el('div', { class: 'field', 'data-field': f.id });
+      var labelKids = [f.label, f.required ? el('span', { class: 'req', 'aria-hidden': 'true', text: '*' }) : null];
+      var usesLabel = ['short_text', 'long_text', 'email', 'phone', 'number', 'date', 'dropdown'].indexOf(f.type) >= 0;
+      wrap.appendChild(usesLabel ? el('label', { for: id }, labelKids) : el('div', { class: 'lbl', id: id + '_lbl' }, labelKids));
+      if (f.help) wrap.appendChild(el('div', { class: 'help', id: id + '_help', text: f.help }));
+      var described = (f.help ? id + '_help ' : '') + id + '_err';
+      var saved = draft[f.id];
+      var input;
+
+      function textInput(type) {
+        input = el('input', { type: type, id: id, name: f.id, placeholder: f.placeholder || null, 'aria-describedby': described, required: !!f.required,
+          inputmode: type === 'tel' ? 'tel' : (type === 'number' ? 'decimal' : null), autocomplete: f.type === 'email' ? 'email' : (f.type === 'phone' ? 'tel' : null) });
+        if (saved != null) input.value = saved;
+        wrap.appendChild(input);
+      }
+      switch (f.type) {
+        case 'short_text': textInput('text'); break;
+        case 'email': textInput('email'); break;
+        case 'phone': textInput('tel'); break;
+        case 'number': textInput('number'); input.setAttribute('step', 'any'); break;
+        case 'date': textInput('date'); break;
+        case 'long_text':
+          input = el('textarea', { id: id, name: f.id, placeholder: f.placeholder || null, 'aria-describedby': described, required: !!f.required });
+          if (saved != null) input.value = saved;
+          wrap.appendChild(input);
+          break;
+        case 'dropdown':
+          input = el('select', { id: id, name: f.id, 'aria-describedby': described, required: !!f.required }, [el('option', { value: '', text: f.placeholder || 'Choose one…' })].concat((f.options || []).map(function (o) { return el('option', { value: o, text: o }); })));
+          if (saved != null) input.value = saved;
+          wrap.appendChild(input);
+          break;
+        case 'single_choice':
+        case 'multiple_choice': {
+          var multi = f.type === 'multiple_choice';
+          var group = el('div', { class: 'opts', role: multi ? 'group' : 'radiogroup', 'aria-labelledby': id + '_lbl', 'aria-describedby': described });
+          (f.options || []).forEach(function (o, i) {
+            var inp = el('input', { type: multi ? 'checkbox' : 'radio', name: f.id, value: o, id: id + '_' + i });
+            if (multi ? (Array.isArray(saved) && saved.indexOf(o) >= 0) : saved === o) inp.checked = true;
+            group.appendChild(el('label', { class: 'opt', for: id + '_' + i }, [inp, el('span', { text: o })]));
+          });
+          wrap.appendChild(group);
+          break;
+        }
+        case 'yes_no':
+        case 'rating': {
+          var opts = f.type === 'yes_no' ? ['Yes', 'No'] : Array.apply(null, Array(f.max || 5)).map(function (_, i) { return String(i + 1); });
+          var pills = el('div', { class: 'pills', role: 'radiogroup', 'aria-labelledby': id + '_lbl', 'aria-describedby': described });
+          opts.forEach(function (o, i) {
+            var inp = el('input', { type: 'radio', name: f.id, value: f.type === 'yes_no' ? o.toLowerCase() : o, id: id + '_' + i });
+            if (saved != null && String(saved).toLowerCase() === o.toLowerCase()) inp.checked = true;
+            pills.appendChild(el('label', { class: 'pill', for: id + '_' + i }, [inp, el('span', { text: o })]));
+          });
+          wrap.appendChild(pills);
+          break;
+        }
+        case 'file': {
+          var list = el('div', { class: 'list' });
+          var fileInput = el('input', { type: 'file', id: id, name: f.id, multiple: !!f.multiple, 'aria-labelledby': id + '_lbl', 'aria-describedby': described });
+          fileInput.addEventListener('change', function () {
+            var files = Array.prototype.slice.call(fileInput.files || []).slice(0, LIM.filesPerField);
+            pendingFiles[f.id] = files;
+            list.textContent = files.length ? files.map(function (x) { return x.name + ' (' + Math.ceil(x.size / 1024) + ' KB)'; }).join(', ') : '';
+            clearError(f.id);
+          });
+          wrap.appendChild(el('div', { class: 'file' }, [fileInput, list, el('div', { class: 'hint', text: (f.multiple ? 'Up to ' + LIM.filesPerField + ' files, ' : 'One file, ') + '10 MB each.' })]));
+          break;
+        }
+      }
+      wrap.appendChild(el('div', { class: 'err', id: id + '_err', role: 'alert' }));
+      wrap.addEventListener('input', function () { clearError(f.id); saveDraft(); });
+      wrap.addEventListener('change', function () { clearError(f.id); saveDraft(); });
+      fieldEls[f.id] = wrap;
+      frm.appendChild(wrap);
+    });
+
+    // Honeypot: real people never see it; bots fill every field.
+    var hp = el('div', { class: 'hp', 'aria-hidden': 'true' }, [el('label', { for: 'website', text: 'Website' }), el('input', { type: 'text', id: 'website', name: 'website', tabindex: '-1', autocomplete: 'off' })]);
+    frm.appendChild(hp);
+
+    var status = el('div', { class: 'status', 'aria-live': 'polite' });
+    var go = el('button', { class: 'go', type: 'submit', text: form.submitLabel || 'Submit' });
+    frm.appendChild(el('div', { class: 'actions' }, [go, status]));
+    card.appendChild(frm);
+
+    function clearError(fid) { var w = fieldEls[fid]; if (w) { w.classList.remove('bad'); w.querySelector('.err').textContent = ''; } }
+    function setError(fid, msg) { var w = fieldEls[fid]; if (w) { w.classList.add('bad'); w.querySelector('.err').textContent = msg; } }
+
+    function collect() {
+      var answers = {};
+      form.fields.forEach(function (f) {
+        if (f.type === 'section' || f.type === 'file') return;
+        if (f.type === 'multiple_choice') {
+          answers[f.id] = Array.prototype.slice.call(frm.querySelectorAll('input[name="' + f.id + '"]:checked')).map(function (i) { return i.value; });
+        } else if (f.type === 'single_choice' || f.type === 'yes_no' || f.type === 'rating') {
+          var c = frm.querySelector('input[name="' + f.id + '"]:checked');
+          answers[f.id] = c ? c.value : '';
+        } else {
+          var i = frm.querySelector('[name="' + f.id + '"]');
+          answers[f.id] = i ? i.value : '';
+        }
+      });
+      return answers;
+    }
+    var draftTimer;
+    function saveDraft() {
+      clearTimeout(draftTimer);
+      draftTimer = setTimeout(function () { try { localStorage.setItem(DRAFT_KEY, JSON.stringify(collect())); } catch (e) {} }, 300);
+    }
+
+    function clientCheck(answers) {
+      var bad = null;
+      var total = 0;
+      form.fields.forEach(function (f) {
+        if (f.type === 'section') return;
+        var v = answers[f.id];
+        if (f.type === 'file') {
+          var files = pendingFiles[f.id] || [];
+          if (f.required && !files.length) { setError(f.id, 'Please attach a file.'); bad = bad || f.id; }
+          files.forEach(function (x) { total += x.size; if (x.size > LIM.fileBytes) { setError(f.id, x.name + ' is over 10 MB.'); bad = bad || f.id; } });
+          return;
+        }
+        var empty = v == null || v === '' || (Array.isArray(v) && !v.length);
+        if (f.required && empty) { setError(f.id, 'This one is required.'); bad = bad || f.id; }
+      });
+      if (total > LIM.totalFileBytes) { status.textContent = 'Attachments total more than 25 MB — please trim them.'; status.className = 'status bad'; bad = bad || '__files'; }
+      return bad;
+    }
+
+    function readFiles() {
+      var out = {};
+      var jobs = [];
+      Object.keys(pendingFiles).forEach(function (fid) {
+        out[fid] = [];
+        pendingFiles[fid].forEach(function (file) {
+          jobs.push(new Promise(function (resolve, reject) {
+            var rd = new FileReader();
+            rd.onload = function () { out[fid].push({ name: file.name, type: file.type, size: file.size, data: String(rd.result).split(',')[1] || '' }); resolve(); };
+            rd.onerror = function () { reject(new Error('Could not read ' + file.name)); };
+            rd.readAsDataURL(file);
+          }));
+        });
+      });
+      return Promise.all(jobs).then(function () { return out; });
+    }
+
+    frm.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      status.className = 'status'; status.textContent = '';
+      var answers = collect();
+      var bad = clientCheck(answers);
+      if (bad) { var w = fieldEls[bad]; if (w) w.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+      go.disabled = true; status.textContent = 'Sending…';
+      readFiles().then(function (files) {
+        return fetch(API + '/api/forms/' + slug + '/submit', {
+          method: 'POST', headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ answers: answers, files: files, website: frm.querySelector('#website').value, t: Date.now() - loadedAt }),
+        });
+      }).then(function (r) { return r.json().then(function (j) { return { status: r.status, body: j }; }); })
+        .then(function (res) {
+          if (res.status === 200 && res.body && res.body.ok) {
+            try { localStorage.removeItem(DRAFT_KEY); } catch (e) {}
+            showThanks(res.body.thankYou || form.thankYou);
+            return;
+          }
+          go.disabled = false;
+          if (res.body && res.body.errors) {
+            var first = null;
+            Object.keys(res.body.errors).forEach(function (k) { setError(k, res.body.errors[k]); first = first || fieldEls[k]; });
+            status.className = 'status bad'; status.textContent = res.body.error || 'Please check the highlighted answers.';
+            if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+          }
+          status.className = 'status bad'; status.textContent = (res.body && res.body.error) || 'Something went wrong. Please try again.';
+        })
+        .catch(function () { go.disabled = false; status.className = 'status bad'; status.textContent = 'Could not reach the server. Check your connection and try again — your answers are still here.'; });
+    });
+  }
+
+  function showThanks(t) {
+    card.innerHTML = '';
+    card.appendChild(el('div', { class: 'done' }, [
+      el('div', { class: 'check', 'aria-hidden': 'true', html: '<svg viewBox="0 0 24 24" fill="none" stroke="#06080e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' }),
+      el('h1', { text: (t && t.title) || 'Thanks — got it.' }),
+      el('p', { text: (t && t.message) || "Your answers are in. We'll be in touch shortly." }),
+      el('a', { href: 'https://biddlesystems.com/', text: 'Back to biddlesystems.com' }),
+    ]));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+})();
+</script>
+</body>
+</html>
