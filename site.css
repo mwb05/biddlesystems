@@ -232,9 +232,18 @@
 .cta-glow {
   position: absolute; inset: 0;
   background: radial-gradient(ellipse 50% 60% at 50% 100%, rgb(var(--a-rgb) / 0.22), transparent 70%);
+  /* ease the glow down toward the seam so it meets the footer's matching glow without a step */
+  -webkit-mask-image: linear-gradient(#000 60%, rgb(0 0 0 / 0.45));
+  mask-image: linear-gradient(#000 60%, rgb(0 0 0 / 0.45));
   pointer-events: none;
 }
-.floor-wrap-cta { height: 60%; opacity: 0.7; }
+/* the grid floor fades out before the band ends, so the CTA runs into the footer instead of
+   stopping at a hard edge (site-editor sb_mwpi3awidcde35, round 2) */
+.floor-wrap-cta {
+  height: 60%; opacity: 0.7;
+  -webkit-mask-image: linear-gradient(transparent, #000 35%, #000 55%, transparent 100%);
+  mask-image: linear-gradient(transparent, #000 35%, #000 55%, transparent 100%);
+}
 .cta-inner { position: relative; display: grid; justify-items: center; gap: var(--space-4); }
 .cta-inner .lede-sm { max-width: 52ch; }
 .cta-title {
@@ -249,16 +258,29 @@
 .cta-band .cta-row { justify-content: center; margin-top: var(--space-3); }
 
 /* ---------- footer ---------- */
-.footer-big { padding: var(--space-8) 0 var(--space-6); background: var(--deep); }
+/* no dividing line, and the CTA's glow carries over the seam and fades down to the deep base, so
+   the page eases into the footer (site-editor sb_mwpi3awidcde35, round 2) */
+.footer-big {
+  padding: var(--space-8) 0 var(--space-6);
+  border-top: 0;
+  background:
+    radial-gradient(ellipse 50% 45% at 50% 0%, rgb(var(--a-rgb) / 0.10), transparent 70%),
+    linear-gradient(var(--bg), var(--deep) 60%);
+}
 .foot-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: var(--space-7); padding-bottom: var(--space-7); border-bottom: 1px solid var(--hairline); }
 .foot-brand { display: grid; gap: var(--space-3); justify-items: start; }
-.foot-brand p { max-width: 40ch; color: var(--ink-3); }
+/* footer text one step brighter than body copy's muted grey so it reads easily on the dark base
+   and over the home page's particle field (site-editor sb_mwpi3awidcde35, round 3) */
+.footer-big { color: var(--ink-2); }
+.footer-big a { color: #c9d3de; }
+.footer-big a:hover { color: var(--ink); }
+.foot-brand p { max-width: 40ch; color: var(--ink-2); }
 .footer-big .brand { color: var(--ink); }
 .foot-mail { font-family: var(--font-mono); }
 .foot-col { display: flex; flex-direction: column; }
-.foot-col b { margin-bottom: var(--space-2); font-family: var(--font-mono); font-size: var(--text-xs); font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+.foot-col b { margin-bottom: var(--space-2); font-family: var(--font-mono); font-size: var(--text-xs); font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
 .foot-col a { min-height: 36px; }
-.foot-base { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-3); padding-top: var(--space-5); }
+.foot-base { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-3); padding-top: var(--space-5); color: var(--ink-2); }
 .foot-mono { font-family: var(--font-mono); font-size: var(--text-xs); }
 
 /* ---------- services ---------- */
@@ -612,3 +634,9 @@
 .pill-cloud.pill-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .pill-cloud.pill-grid li { display: flex; align-items: center; justify-content: center; text-align: center; }
 @media (max-width: 960px) { .pill-cloud.pill-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* ---------- site-editor batch sb_mwpi3awidcde35 ---------- */
+/* Menu button: easier to see (stronger ring, solid backing, thicker bars) */
+.menu-btn { border: 1px solid rgb(255 255 255 / 0.45); background: rgb(var(--bg-rgb) / 0.92); box-shadow: 0 2px 12px rgb(0 0 0 / 0.45); }
+.menu-btn span { height: 2px; background: #fff; }
+.menu-btn:hover { border-color: var(--accent); }

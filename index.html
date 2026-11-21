@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Biddle Systems | AI automation that gives small businesses their week back</title>
-<meta name="description" content="Three things for small businesses: automations we build and run for you, AI proficiency courses for your team, and Archer, our self-serve automation tool, which turns one sentence into a working automation.">
+<meta name="description" content="Done-for-you AI automation for small businesses: tell us the chore, and we build the automation, run it every day and fix it before you notice. You don't manage any of it.">
 <link rel="canonical" href="https://biddlesystems.com/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Biddle Systems">
 <meta property="og:url" content="https://biddlesystems.com/">
 <meta property="og:title" content="Biddle Systems | Get your week back">
-<meta property="og:description" content="Three things for small businesses: automations we build and run for you, AI proficiency courses for your team, and Archer, our self-serve automation tool, which turns one sentence into a working automation.">
+<meta property="og:description" content="Done-for-you AI automation for small businesses: tell us the chore, and we build the automation, run it every day and fix it before you notice. You don't manage any of it.">
 <meta name="twitter:card" content="summary">
 <meta name="theme-color" content="#04070b">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -18,15 +18,16 @@
 <link rel="preload" href="fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/inter-tight-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="styles.css?v=12">
-<link rel="stylesheet" href="theme.css?v=12">
-<link rel="stylesheet" href="site.css?v=14">
+<link rel="stylesheet" href="theme.css?v=13">
+<link rel="stylesheet" href="site.css?v=17">
 <link rel="stylesheet" href="heroes.css?v=12">
+<link rel="stylesheet" href="ride.css?v=4">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "ProfessionalService",
   "name": "Biddle Systems",
-  "description": "AI automation services, AI proficiency courses and Archer, a self-serve automation tool, for small businesses.",
+  "description": "Done-for-you AI automation for small businesses: custom automations built, run and monitored for you, with AI training as an add-on.",
   "url": "https://biddlesystems.com/",
   "email": "support@biddlesystems.com",
   "founder": { "@type": "Person", "name": "Matt Biddle" },
@@ -37,7 +38,9 @@
 <script>
 /* Motion preference, applied before first paint so the page never flashes animated then static.
    Set by the "Pause animations" button in the footer; stored only on this device. */
+document.documentElement.classList.add('js');
 try {
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('rm');
   if (localStorage.getItem('bs-motion') === 'off') {
     document.documentElement.classList.add('rm');
     var st = document.createElement('style');
@@ -62,7 +65,6 @@ try {
     <nav class="nav-links" aria-label="Main">
       <a href="automation/">Automation</a>
       <a href="courses/">AI courses</a>
-      <a href="tool/">Archer</a>
       <a href="process/">How it works</a>
       <a href="proof/">Proof</a>
       <a href="about/">About</a>
@@ -79,130 +81,182 @@ try {
     <a style="--i:0" href="" aria-current="page">Home</a>
     <a style="--i:1" href="automation/">Automation</a>
     <a style="--i:2" href="courses/">AI courses</a>
-    <a style="--i:3" href="tool/">Archer</a>
-    <a style="--i:4" href="services/">All services</a>
-    <a style="--i:5" href="savings/">Savings</a>
-    <a style="--i:6" href="process/">How it works</a>
-    <a style="--i:7" href="proof/">Proof</a>
-    <a style="--i:8" href="about/">About</a>
-    <a style="--i:9" href="contact/">Contact</a>
+    <a style="--i:3" href="services/">All services</a>
+    <a style="--i:4" href="savings/">Savings</a>
+    <a style="--i:5" href="process/">How it works</a>
+    <a style="--i:6" href="proof/">Proof</a>
+    <a style="--i:7" href="about/">About</a>
+    <a style="--i:8" href="contact/">Contact</a>
   </nav>
   <a class="menu-mail" href="mailto:support@biddlesystems.com">support@biddlesystems.com</a>
 </div>
 
 <main id="main" tabindex="-1">
-  <!-- HERO -->
-  <section class="hero" id="top">
-    <div class="hero-bg" aria-hidden="true">
-      <canvas class="globe" id="globe"></canvas>
-      <div class="floor-wrap"><div class="floor"></div></div>
-      <div class="spot" id="spot"></div>
-    </div>
+  <!-- THE RIDE (round 23). The home page is one continuous scroll story:
+       the pile -> we build it -> we run it -> we fix it before you notice -> the result -> proof
+       -> courses add-on -> call to action.
+       ride.js drives it: a fixed 3D particle field behind the page (each section's data-shape is
+       the form the particles take while it is on screen) and scroll-scrubbed GSAP timelines on
+       the pinned scenes. Without JS, or with reduced motion / "Pause animations", every scene is
+       a plain section with its final state showing, so the page reads top to bottom. -->
+  <div class="ride-bg" aria-hidden="true">
+    <canvas id="ride-canvas"></canvas>
+    <div class="ride-vignette"></div>
+  </div>
 
-    <div class="container hero-grid">
-      <div class="hero-copy">
-        <p class="eyebrow rv">AI automation for small businesses</p>
-        <h1 class="display" data-words>Get your week back.</h1>
-        <p class="lede rv" style="--d:300ms">We build automations for your business, train your team to use AI, or give you Archer, our tool for building your own.</p>
-        <div class="cta-row rv" style="--d:400ms">
-          <a class="btn btn-primary" href="contact/" data-magnet>Book the free audit</a>
-          <a class="btn btn-ghost" href="#offer">The three services</a>
+  <!-- 0. HERO: the camera pulls through the headline into the storm -->
+  <section class="rs rs-hero" id="top" data-shape="drift">
+    <div class="rs-pin">
+      <div class="container r-hero">
+        <div class="r-hero-copy">
+          <p class="eyebrow">Done-for-you AI automation for small businesses</p>
+          <h1 class="display r-display" data-words>Get your week back.</h1>
+          <p class="lede">Tell us the chore. We build the automation, run it for you every day, and fix it before you notice anything went wrong.</p>
+          <div class="cta-row">
+            <a class="btn btn-primary" href="contact/" data-magnet>Book the free audit</a>
+            <a class="btn btn-ghost" href="#pile">Take the tour</a>
+          </div>
         </div>
       </div>
+      <a class="scroll-cue r-cue" href="#pile" aria-label="Scroll to start the tour">
+        <span>Scroll</span><span class="cue-line"></span>
+      </a>
+    </div>
+  </section>
 
-      <div class="hero-visual rv" style="--d:350ms" aria-hidden="true">
-        <div class="tilt" data-tilt>
-          <div class="panel">
+  <!-- 1. THE PILE: the owner drowning in repetitive work -->
+  <section class="rs rs-pile" id="pile" data-shape="storm" aria-labelledby="pile-title">
+    <div class="rs-pin">
+      <div class="container r-split">
+        <div class="r-copy">
+          <p class="eyebrow">Sound familiar?</p>
+          <h2 class="h-display" id="pile-title">Every week, the same work. <span class="muted">By hand.</span></h2>
+          <p class="lede-sm r-beat">Invoices, weekly reports, a crowded inbox, endless follow-ups. None of it is complex, yet every week it lands back on your desk.</p>
+          <div class="pile-meter r-beat">
+            <span class="pm-clock" id="pile-clock">Monday, 6:04 am</span>
+            <span class="pm-num"><strong id="pile-hours">16.5</strong> hours by hand this week</span>
+          </div>
+        </div>
+        <div class="r-visual">
+          <ul class="pile" aria-label="A typical week done by hand">
+            <li class="pcard" style="--x:0%;--y:0%;--r:-4deg"><span>Invoice entry and coding</span><b>6.0 h</b></li>
+            <li class="pcard" style="--x:54%;--y:4%;--r:4deg"><span>Weekly sales and labor report</span><b>3.0 h</b></li>
+            <li class="pcard" style="--x:3%;--y:25%;--r:3deg"><span>Inbox triage and follow-ups</span><b>4.0 h</b></li>
+            <li class="pcard" style="--x:56%;--y:29%;--r:-3deg"><span>Vendor statement reconciliation</span><b>2.0 h</b></li>
+            <li class="pcard" style="--x:1%;--y:50%;--r:-2deg"><span>Re-keying customer intake forms</span><b>1.5 h</b></li>
+            <li class="pcard pcard-note" style="--x:53%;--y:54%;--r:5deg"><span>27 unread, 6 need a reply</span><b>!</b></li>
+            <li class="pcard pcard-note" style="--x:2%;--y:75%;--r:-5deg"><span>Report due Monday, 8 am</span><b>!</b></li>
+            <li class="pcard pcard-note" style="--x:55%;--y:79%;--r:2deg"><span>3 customers still owe you</span><b>!</b></li>
+          </ul>
+        </div>
+      </div>
+      <p class="r-kicker container" id="pile-kicker">So hand it off.</p>
+    </div>
+  </section>
+
+  <!-- 2. WE BUILD IT -->
+  <section class="rs rs-build" id="offer" data-shape="lattice" aria-labelledby="build-title">
+    <div class="rs-pin">
+      <div class="container r-split">
+        <div class="r-copy">
+          <p class="eyebrow"><span class="r-num">01</span> We build it</p>
+          <h2 class="h-display" id="build-title">We build it.</h2>
+          <p class="lede-sm">We learn how the work is done today, then build each automation around your exact process, inside the systems you already use. No new tool to learn and no project to manage.</p>
+          <dl class="ba r-ba">
+            <div><dt>We do</dt><dd>Build each automation around your exact process</dd></div>
+            <div><dt>You do</dt><dd>Approve it once it works on your real data</dd></div>
+          </dl>
+          <a class="link-arrow" href="automation/">Automation services</a>
+        </div>
+        <div class="r-visual">
+          <ol class="flow-build" aria-label="Example: an invoice automation">
+            <li class="fb-step"><span class="fb-k">Trigger</span><span>An invoice lands in the inbox</span></li>
+            <li class="fb-step"><span class="fb-k">Read</span><span>Vendor, amount and job pulled out</span></li>
+            <li class="fb-step"><span class="fb-k">Code</span><span>Coded and filed in QuickBooks</span></li>
+            <li class="fb-step"><span class="fb-k">Done</span><span>Queued for your one-click OK</span></li>
+          </ol>
+          <span class="fb-line" aria-hidden="true"><i></i></span>
+          <span class="fb-stamp" aria-hidden="true">Built</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. WE RUN IT -->
+  <section class="rs rs-run" id="run" data-shape="orbit" aria-labelledby="run-title">
+    <div class="rs-pin">
+      <div class="container r-split r-split-flip">
+        <div class="r-copy">
+          <p class="eyebrow"><span class="r-num">02</span> We run it</p>
+          <h2 class="h-display" id="run-title">We run it. <span class="muted">Every day.</span></h2>
+          <p class="lede-sm">Your automations run on your own dedicated server, on schedule, and we watch every run. You don't log in, babysit it, or have to remember it exists.</p>
+          <dl class="ba r-ba">
+            <div><dt>We do</dt><dd>Run it every day on its own server, and watch it</dd></div>
+            <div><dt>You get</dt><dd>The finished work, waiting when you start your day</dd></div>
+          </dl>
+          <a class="link-arrow" href="process/">How it works</a>
+        </div>
+        <div class="r-visual">
+          <div class="panel r-panel" aria-hidden="true">
             <div class="panel-head">
               <span class="dot-live"></span>
-              <span>Tuesday, 6:04 am</span>
+              <span id="run-clock">Tuesday, 6:04 am</span>
             </div>
             <ul class="runlist">
-              <li class="rv" style="--d:600ms"><span class="tick"></span><span>Sales report emailed</span><em>1h 10m saved</em></li>
-              <li class="rv" style="--d:700ms"><span class="tick"></span><span>Inbox sorted, replies drafted</span><em>50m saved</em></li>
-              <li class="rv" style="--d:800ms"><span class="tick"></span><span>Invoices coded and filed</span><em>1h 20m saved</em></li>
-              <li class="rv" style="--d:900ms"><span class="tick"></span><span>Follow-ups sent</span><em>15m saved</em></li>
+              <li><span class="tick"></span><span>Sales report emailed</span><em>1h 10m saved</em></li>
+              <li><span class="tick"></span><span>Inbox sorted, replies drafted</span><em>50m saved</em></li>
+              <li><span class="tick"></span><span>Invoices coded and filed</span><em>1h 20m saved</em></li>
+              <li><span class="tick"></span><span>Follow-ups sent</span><em>15m saved</em></li>
             </ul>
             <div class="panel-foot">
               <span>Hours handed back today</span>
-              <strong><span data-count="3.6" data-decimals="1">3.6</span> h</strong>
+              <strong><span id="run-hours">3.6</span> h</strong>
             </div>
           </div>
+          <p class="caption">Illustrative morning for a client build.</p>
         </div>
-        <p class="caption">Illustrative morning for a client build.</p>
-      </div>
-    </div>
-
-    <a class="scroll-cue" href="#offer" aria-label="Scroll to the three services">
-      <span>Scroll</span><span class="cue-line"></span>
-    </a>
-  </section>
-
-  <div class="stack-strip" aria-label="Works with what you already use">
-    <span class="stack-label">Plugs into what you already use</span>
-    <div class="marquee marquee-sm" data-marquee aria-hidden="true">
-      <div class="mq-track"><span>Gmail</span><span class="mq-sep">/</span><span>Outlook</span><span class="mq-sep">/</span><span>Microsoft 365</span><span class="mq-sep">/</span><span>Google Workspace</span><span class="mq-sep">/</span><span>QuickBooks</span><span class="mq-sep">/</span><span>Excel</span><span class="mq-sep">/</span><span>POS exports</span><span class="mq-sep">/</span><span>Payroll</span><span class="mq-sep">/</span><span>Bank feeds</span><span class="mq-sep">/</span><span>CRM</span><span class="mq-sep">/</span><span>Calendars</span><span class="mq-sep">/</span><span>Text messages</span><span class="mq-sep">/</span><span>PDFs</span><span class="mq-sep">/</span><span>Gmail</span><span class="mq-sep">/</span><span>Outlook</span><span class="mq-sep">/</span><span>Microsoft 365</span><span class="mq-sep">/</span><span>Google Workspace</span><span class="mq-sep">/</span><span>QuickBooks</span><span class="mq-sep">/</span><span>Excel</span><span class="mq-sep">/</span><span>POS exports</span><span class="mq-sep">/</span><span>Payroll</span><span class="mq-sep">/</span><span>Bank feeds</span><span class="mq-sep">/</span><span>CRM</span><span class="mq-sep">/</span><span>Calendars</span><span class="mq-sep">/</span><span>Text messages</span><span class="mq-sep">/</span><span>PDFs</span><span class="mq-sep">/</span></div>
-    </div>
-  </div>
-
-  <!-- THE THREE SERVICES -->
-  <section class="automate section" id="offer" aria-labelledby="offer-title">
-    <div class="container">
-      <div class="section-head section-head-row section-head-center rv">
-        <div>
-          <p class="eyebrow">What we sell</p>
-          <h2 class="h-display" id="offer-title">Three ways to get your week back.</h2>
-          <p class="lede-sm">Pick how hands-on you want to be: we handle it for you, or we set your team up to handle it.</p>
-        </div>
-        <a class="link-arrow" href="services/">All three, in detail</a>
-      </div>
-
-      <div class="bento bento-3">
-        <a class="bcard bcard-link rv" href="automation/" data-tilt style="--d:0ms">
-          <div class="viz viz-report" aria-hidden="true">
-            <div class="vz-mail"><span class="vz-dot"></span><span>Daily sales and labor</span><em>6:00 am</em></div>
-            <div class="vz-bars"><i style="--h:42%"></i><i style="--h:58%"></i><i style="--h:50%"></i><i style="--h:72%"></i><i style="--h:64%"></i><i style="--h:88%"></i><i style="--h:78%"></i></div>
-          </div>
-          <span class="bicon" aria-hidden="true">01</span>
-          <h3>Automation services</h3>
-          <dl class="ba">
-            <div><dt>We do</dt><dd>Find, build, and maintain the automations</dd></div>
-            <div><dt>You do</dt><dd>Review and approve the results</dd></div>
-          </dl>
-        </a>
-        <a class="bcard bcard-link rv" href="courses/" data-tilt style="--d:80ms">
-          <div class="viz viz-inbox" aria-hidden="true">
-            <div class="vz-row"><b class="c1">01</b><span></span><em>Writing with AI</em></div>
-            <div class="vz-row"><b class="c2">02</b><span></span><em>Checking the output</em></div>
-            <div class="vz-row"><b class="c3">03</b><span></span><em>What never goes in</em></div>
-          </div>
-          <span class="bicon" aria-hidden="true">02</span>
-          <h3>AI proficiency courses</h3>
-          <dl class="ba">
-            <div><dt>We do</dt><dd>Run hands-on AI training for your team</dd></div>
-            <div><dt>You get</dt><dd>Staff who use AI confidently and safely</dd></div>
-          </dl>
-        </a>
-        <a class="bcard bcard-link rv" href="tool/" data-tilt style="--d:160ms">
-          <div class="viz viz-chat" aria-hidden="true">
-            <p class="vz-b in">Every Friday morning, text me which customers still owe us.</p>
-            <p class="vz-b out">Built. Runs Fridays, texts you the list.</p>
-          </div>
-          <span class="bicon" aria-hidden="true">03</span>
-          <h3>Archer, our automation tool</h3>
-          <dl class="ba">
-            <div><dt>You do</dt><dd>Describe the task by text or voice</dd></div>
-            <div><dt>It does</dt><dd>Builds the automation and runs it</dd></div>
-          </dl>
-        </a>
       </div>
     </div>
   </section>
 
-  <!-- BEFORE / AFTER: pinned, scroll-scrubbed 3D stage -->
-  <section class="shift" id="shift" aria-labelledby="shift-title">
+  <!-- 4. WE FIX IT BEFORE YOU NOTICE -->
+  <section class="rs rs-fix" id="fix" data-shape="alert" aria-labelledby="fix-title">
+    <div class="rs-pin">
+      <div class="container r-split">
+        <div class="r-copy">
+          <p class="eyebrow"><span class="r-num">03</span> We fix it</p>
+          <h2 class="h-display" id="fix-title">We fix it <span class="hl-good">before you notice.</span></h2>
+          <p class="lede-sm">Banks change their exports. Vendors change their invoice layouts. When something breaks, our monitoring catches it, we fix it and re-run the job, and the work is done before your morning starts.</p>
+          <dl class="ba r-ba">
+            <div><dt>We do</dt><dd>Watch every run and fix what breaks</dd></div>
+            <div><dt>You get</dt><dd>Problems caught and fixed before you notice</dd></div>
+          </dl>
+        </div>
+        <div class="r-visual">
+          <div class="monitor" id="monitor" aria-label="Example overnight fix">
+            <div class="mon-head">
+              <span class="mon-title">Overnight, while you sleep</span>
+              <span class="mon-status">
+                <span class="ms ms-ok-0">All healthy</span>
+                <span class="ms ms-bad">Issue found</span>
+                <span class="ms ms-ok">Fixed</span>
+              </span>
+            </div>
+            <ol class="mon-log">
+              <li class="ml ml-bad"><time>2:13 am</time><span>Invoice run stopped: a vendor changed its invoice layout</span></li>
+              <li class="ml"><time>2:14 am</time><span>Alert sent to the Biddle Systems team</span></li>
+              <li class="ml"><time>2:31 am</time><span>Fix shipped, invoices re-run and filed</span></li>
+              <li class="ml ml-good"><time>6:00 am</time><span>Your morning: everything done. Nothing to see here.</span></li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. THE RESULT: pinned, scroll-scrubbed before/after stage (script.js section 7) -->
+  <section class="shift" id="shift" data-shape="field" aria-labelledby="shift-title">
     <div class="shift-sticky">
-      <div class="floor-wrap floor-wrap-shift" aria-hidden="true"><div class="floor"></div></div>
       <div class="container">
         <div class="shift-head shift-head-center">
           <p class="eyebrow">A Monday, before and after</p>
@@ -265,19 +319,27 @@ try {
     </div>
   </section>
 
-  <!-- PROOF (teaser) -->
-  <section class="proof section" id="proof" aria-labelledby="proof-title">
+  <div class="stack-strip" aria-label="Works with what you already use">
+    <span class="stack-label">Plugs into what you already use</span>
+    <div class="marquee marquee-sm" data-marquee aria-hidden="true">
+      <div class="mq-track"><span>Gmail</span><span class="mq-sep">/</span><span>Outlook</span><span class="mq-sep">/</span><span>Microsoft 365</span><span class="mq-sep">/</span><span>Google Workspace</span><span class="mq-sep">/</span><span>QuickBooks</span><span class="mq-sep">/</span><span>Excel</span><span class="mq-sep">/</span><span>POS exports</span><span class="mq-sep">/</span><span>Payroll</span><span class="mq-sep">/</span><span>Bank feeds</span><span class="mq-sep">/</span><span>CRM</span><span class="mq-sep">/</span><span>Calendars</span><span class="mq-sep">/</span><span>Text messages</span><span class="mq-sep">/</span><span>PDFs</span><span class="mq-sep">/</span><span>Gmail</span><span class="mq-sep">/</span><span>Outlook</span><span class="mq-sep">/</span><span>Microsoft 365</span><span class="mq-sep">/</span><span>Google Workspace</span><span class="mq-sep">/</span><span>QuickBooks</span><span class="mq-sep">/</span><span>Excel</span><span class="mq-sep">/</span><span>POS exports</span><span class="mq-sep">/</span><span>Payroll</span><span class="mq-sep">/</span><span>Bank feeds</span><span class="mq-sep">/</span><span>CRM</span><span class="mq-sep">/</span><span>Calendars</span><span class="mq-sep">/</span><span>Text messages</span><span class="mq-sep">/</span><span>PDFs</span><span class="mq-sep">/</span></div>
+    </div>
+  </div>
+
+  <!-- 6. PROOF: test engagements, described generically -->
+  <section class="proof section r-proof" id="proof" data-shape="globe" aria-labelledby="proof-title">
     <div class="container proof-split">
       <div class="rv">
         <p class="eyebrow">Proof</p>
         <h2 class="h-display" id="proof-title">Proven on real businesses first.</h2>
         <p class="lede-sm">
-          Matt Biddle designed and built his own AI agent system, and it's used every day
-          in his family's business.
+          Our automations already run inside working small businesses: real invoices, real inboxes,
+          real Monday mornings. Need something nobody has built yet? We build it custom, test it on your
+          real work, and run it side by side with you until it earns its keep.
         </p>
         <a class="link-arrow" href="proof/">See it at work</a>
       </div>
-      <div class="term rv" style="--d:120ms" aria-hidden="true">
+      <div class="term r-term" aria-hidden="true">
         <div class="term-head"><span></span><span></span><span></span><b>ai assistant / activity</b></div>
         <pre class="term-log" id="term-log"></pre>
         <p class="term-note">Illustrative activity feed.</p>
@@ -285,19 +347,37 @@ try {
     </div>
   </section>
 
+  <!-- 8. COURSES: the add-on -->
+  <section class="section r-courses" id="courses" data-shape="helix" aria-labelledby="courses-title">
+    <div class="container">
+      <div class="r-addon rv">
+        <p class="eyebrow">Add-on / For your team</p>
+        <h2 class="h-display" id="courses-title">Want your team sharp with AI, too?</h2>
+        <p class="lede-sm">AI proficiency courses are an add-on to our automation service: hands-on training built around your team's real work. Where AI fits, how to ask for what you need, how to check the result, and what never goes in.</p>
+        <ul class="r-chips" aria-label="What the course covers">
+          <li>Where AI fits</li><li>Asking for what you need</li><li>Checking the result</li><li>What never goes in</li>
+        </ul>
+        <a class="link-arrow" href="courses/">AI proficiency courses</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. FINISH -->
+  <div class="r-finale" data-shape="core">
   <section class="cta-band" aria-labelledby="cta-title">
     <div class="cta-glow" aria-hidden="true"></div>
     <div class="floor-wrap floor-wrap-cta" aria-hidden="true"><div class="floor"></div></div>
     <div class="container cta-inner rv">
       <p class="eyebrow">Free automation audit</p>
       <h2 class="cta-title" id="cta-title">See what could run <span class="hl">on its own</span>.</h2>
-      <p class="lede-sm">A 30-minute call, no sales pitch. You leave knowing which tasks can run on their own and which service fits: we build it, we train your team, or you use the tool.</p>
+      <p class="lede-sm">A 30-minute call about your business. You leave knowing which tasks we can take off your plate, build, and run for you.</p>
       <div class="cta-row">
         <a class="btn btn-primary" href="contact/" data-magnet>Book the free audit</a>
         <a class="btn btn-ghost" href="mailto:support@biddlesystems.com">support@biddlesystems.com</a>
       </div>
     </div>
   </section>
+  </div>
 
 </main>
 
@@ -306,7 +386,7 @@ try {
     <div class="foot-grid">
       <div class="foot-brand">
         <a class="brand" href="" aria-label="Biddle Systems home"><span class="mark" aria-hidden="true">B</span><span class="brand-name">Biddle Systems</span></a>
-        <p>AI automation for small businesses: we build it, we teach your team, or you build it with Archer.</p>
+        <p>Done-for-you AI automation for small businesses: we build it, we run it, and we fix it before you notice.</p>
         <a class="foot-mail" href="mailto:support@biddlesystems.com">support@biddlesystems.com</a>
       </div>
       <nav class="foot-col" aria-label="Site">
@@ -335,6 +415,6 @@ try {
 
 <script src="script.js?v=13" defer></script>
 <script src="fx.js?v=12" defer></script>
-
+<script src="ride.js?v=1" defer></script>
 </body>
 </html>
