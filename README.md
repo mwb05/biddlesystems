@@ -20,7 +20,7 @@ git push origin main
 
 `--prod` drops the preview-only noindex tag and "Preview" chip; everything else is identical.
 Generated: index.html, about/ accessibility/ automation/ contact/ courses/ privacy/ process/ proof/
-savings/ services/ sms-terms/ terms/ tool/, styles.css theme.css site.css heroes.css script.js fx.js
+pay/ (Billing page and pay/success/) savings/ services/ sms-terms/ terms/ tool/, pay.js styles.css theme.css site.css heroes.css script.js fx.js
 calc.js favicon.svg fonts/ .nojekyll.
 
 ## Hand-kept files (not generated, don't delete)
